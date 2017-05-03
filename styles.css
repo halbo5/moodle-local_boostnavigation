@@ -1,0 +1,24 @@
+#nav-drawer .node-visible {
+    display: inherit;
+}
+
+#nav-drawer .node-hidden {
+    display: none;
+}
+
+/* If menu item displays an (empty) icon -> hide it. */
+#nav-drawer a.list-group-item[data-key|='localboostnavigationsections'] .icon {
+    display:none;
+}
+/* Add icon for displaying toggle state: expanded. */
+#nav-drawer a.list-group-item.triangle-down .media-body::after, #nav-drawer div.list-group-item.triangle-down > div::after {
+    content: url([[pix:i/dropdown]]);
+    padding-left: 0.2rem;
+    vertical-align: sub;
+}
+/* Add icon for displaying toggle state: collapsed. */
+#nav-drawer a.list-group-item.triangle-up .media-body::after, #nav-drawer div.list-group-item.triangle-up > div::after {
+    content: url([[pix:t/collapsed]]);
+    padding-left: 0.2rem;
+    vertical-align: sub;
+}

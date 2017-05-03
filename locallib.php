@@ -71,9 +71,7 @@ function local_boostnavigation_get_all_childrenkeys(navigation_node $navigationn
     // No, this node does not have children anymore.
     if (count($navigationnode->children) == 0) {
         return array();
-    }
-    // Yes, this node has children.
-    else {
+    } else { // Yes, this node has children.
         // Get own own children keys.
         $childrennodeskeys = $navigationnode->get_children_key_list();
         // Get all children keys of our children recursively.
@@ -88,3 +86,34 @@ function local_boostnavigation_get_all_childrenkeys(navigation_node $navigationn
     }
 }
 
+/**
+ * Function to fill the section cache for local_boostnavigation.
+ *
+ * @param navigation_node $navigationnode
+ * @param array $nodechildrenkeys
+ * @param int $courseid
+ */
+function local_boostnavigation_fill_section_cache(navigation_node $parentnode, array $nodechildrenkeys, $courseid) {
+    // Use the cache "local_boostnavigation_section_cache".
+    $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'local_boostnavigation_section_cache');
+    // Traverse the navigationnode children.
+    foreach ($nodechildrenkeys as $k) {
+        // Get the href URLs.
+        $url = $parentnode->get($k)->action->out_as_local_url();
+        // Make array on delimiter "#, because after this the section ids are defined.
+        $urlparams = explode('#', $url);
+        // If there is an entry behind the delimiter #, we have menu items with a section link.
+        if (!empty($urlparams[1])) {
+            // If there's a sction-0 save the section id in the cache and don't go futrher.
+            if ($urlparams[1] == "section-0") {
+                $cachevalue[$courseid] = $k;
+                $localboostnavigationsectioncache->set('local_boostnavigation_section_cache', $cachevalue);
+                break;
+                // Otherwise we have no section-0 but a section-1 as first section.
+            } else if (($urlparams[1] != "section-0") && ($urlparams[1] == "section-1")) {
+                $cachevalue[$courseid] = $k;
+                $localboostnavigationsectioncache->set('local_boostnavigation_section_cache', $cachevalue);
+            }
+        }
+    }
+}

@@ -33,11 +33,21 @@ After installing local_boostnavigation, the plugin does not do anything to Moodl
 To configure the plugin and its behaviour, please visit:
 Site administration -> Appearance -> Boost navdrawer fumbling.
 
-There, you find only one section:
+There, you find two sections:
 
 ### 1. Remove nodes from Boost's nav drawer
 
 Enabling any of these settings will remove them from Boost's nav drawer. Technically, this is done by setting the node's showinflatnavigation attribute to false. Thus, the node will only be hidden from the nav drawer, but it will remain in the navigation tree and can still be accessed by other parts of Moodle.
+
+### 2. Toggeling nodes in Boost's nav drawer
+
+#### 3.1 Toggle node "My Courses"
+
+Enabling this setting will make it possible to toggle the node "My courses".
+
+#### 3.2 Toggle additional node "Sections"
+
+Enabling this setting will create the node "Sections" that will be inserted in the nav drawer menu above the first section of the current course and by clicking on it, it will toggle the course sections.
 
 
 How this plugin works

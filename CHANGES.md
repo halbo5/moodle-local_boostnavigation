@@ -4,6 +4,10 @@ moodle-local_boostnavigation
 Changes
 -------
 
+### Unreleased
+
+* 2017-05-10 - Settings to be able to toggle specific nav drawer nodes.
+
 ### v3.2-r10
 
 * 2017-05-10 - Add the possibility to remove the first Home / Dashboard node, not only the unneeded second one
