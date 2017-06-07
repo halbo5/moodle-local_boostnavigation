@@ -17,7 +17,7 @@
  * Local plugin "Boost navigation fumbling" - JS code for toggeling nav drawer nodes
  *
  * @package    local_boostnavigation
- * @copyright  2017 Alexander Bias, Ulm University <alexander.bias@uni-ulm.de>
+ * @copyright  2017 Kathrin Osswald, Ulm University <kathrin.osswald@uni-ulm.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,27 +39,27 @@ define(['jquery'], function($) {
     function toggleClickHandler(node, prefname) {
         node.click(function() {
             var nextAll = node.nextAll('.list-group-item');
-            if(node.hasClass('node-expanded')) {
-                node.removeClass('node-expanded triangle-down');
+            if (node.hasClass('node-expanded')) {
+                node.removeClass('node-expanded');
                 nextAll.each(function() {
                     // Only apply the changes for those items that already have the class.
                     // This prevents adding the class to items that should not be toggled.
-                    if($(this).hasClass('node-visible')){
+                    if ($(this).hasClass('node-visible')) {
                         $(this).removeClass('node-visible').addClass('node-hidden');
                     }
                 });
-                node.addClass('node-collapsed triangle-up');
+                node.addClass('node-collapsed');
                 M.util.set_user_preference('local_boostnavigation-collapse_' + prefname + 'node', 1);
-            } else if(node.hasClass('node-collapsed')) {
-                node.removeClass('node-collapsed triangle-up');
+            } else if (node.hasClass('node-collapsed')) {
+                node.removeClass('node-collapsed');
                 nextAll.each(function() {
                     // Only apply the changes for those items that already have the class.
                     // This prevents adding the class to items that should not be toggled.
-                    if($(this).hasClass('node-hidden')){
+                    if ($(this).hasClass('node-hidden')) {
                         $(this).removeClass('node-hidden').addClass('node-visible');
                     }
                 });
-                node.addClass('node-expanded triangle-down');
+                node.addClass('node-expanded');
                 M.util.set_user_preference('local_boostnavigation-collapse_' + prefname + 'node', 0);
             }
         });

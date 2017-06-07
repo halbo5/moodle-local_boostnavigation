@@ -74,10 +74,14 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
         }
     }
 
-    // Get the my courses node.
-    $mycoursesnode = $navigation->find('mycourses', global_navigation::TYPE_ROOTNODE);
-    // Get it's children.
-    $mycourseschildrennodeskeys = $mycoursesnode->get_children_key_list();
+    // Catch the my courses node and its children here, because we need the result in the following functions.
+    if (isset($config->removemycoursesnode) && $config->removemycoursesnode == true ||
+        isset($config->togglenodemycourses) && $config->togglenodemycourses == true) {
+        // Get the my courses node.
+        $mycoursesnode = $navigation->find('mycourses', global_navigation::TYPE_ROOTNODE);
+        // Get its children.
+        $mycourseschildrennodeskeys = $mycoursesnode->get_children_key_list();
+    }
 
     // Check if admin wanted us to remove the mycourses node from Boost's nav drawer.
     if (isset($config->removemycoursesnode) && $config->removemycoursesnode == true) {
@@ -98,7 +102,9 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
                     foreach ($allchildrennodes as $cn) {
                         $mycoursesnode->find($cn, null)->showinflatnavigation = false;
                     }
-                } else { // Otherwise we have a flat navigation tree and hiding the courses is easy.
+                }
+                // Otherwise we have a flat navigation tree and hiding the courses is easy.
+                else {
                     $mycoursesnode->get($k)->showinflatnavigation = false;
                 }
             }
@@ -106,16 +112,18 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
     }
 
     // Check if admin wanted us to make it possible to toggle specific nodes in Boost's nav drawer.
-    if (isset($config->togglenodemycourses) || isset($config->togglecoursehome)) {
-         // Check if admin wanted us to be able to toggle the node "My Courses".
-        if (isset($config->togglenodemycourses) && $config->togglenodemycourses == true) {
-            // If yes, do it.
+    if (isset($config->togglenodemycourses) || isset($config->togglecoursehome) &&
+        $config->togglenodecoursesections == true && $config->togglenodemycourses == true) {
+        // Check if admin wanted us to be able to toggle the node "My Courses".
+        if ($config->togglenodemycourses == true) {
+            // Remember the toggled node for JavaScript.
             $togglenodesforjs[] = 'mycourses';
             // Get the user preference for the toggle state of the mycourses node and set equivalent classes.
-            if (get_user_preferences('local_boostnavigation-collapse_mycoursesnode', 0) == 0) {
-                    $mycoursesnode->add_class('triangle-down node-expanded');
+            $userprefmycourses = get_user_preferences('local_boostnavigation-collapse_mycoursesnode', 0);
+            if ($userprefmycourses == 0) {
+                $mycoursesnode->add_class('node-expanded');
             } else {
-                    $mycoursesnode->add_class('triangle-up node-collapsed');
+                $mycoursesnode->add_class('node-collapsed');
             }
 
             // All children need classes for displaying or hiding those.
@@ -128,41 +136,36 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
                     // Unfortunately, the children nodes have navigation_node type TYPE_MY_CATEGORY or navigation_node type
                     // TYPE_COURSE, thus we need to search without a specific navigation_node type.
                     foreach ($allchildrennodes as $cn) {
-                        if (get_user_preferences('local_boostnavigation-collapse_mycoursesnode') == 0) {
+                        if ($userprefmycourses == 0) {
                             $mycoursesnode->find($cn, null)->add_class("node-visible");
                         } else {
                             $mycoursesnode->find($cn, null)->add_class("node-hidden");
                         }
                     }
                 } else { // Otherwise we have a flat navigation tree and hiding the courses is easy.
-                    if (get_user_preferences('local_boostnavigation-collapse_mycoursesnode') == 0) {
-                            $mycoursesnode->get($k)->add_class("node-visible");
+                    if ($userprefmycourses == 0) {
+                        $mycoursesnode->get($k)->add_class("node-visible");
                     } else {
-                            $mycoursesnode->get($k)->add_class("node-hidden");
+                        $mycoursesnode->get($k)->add_class("node-hidden");
                     }
                 }
             }
         }
 
-        // Check if admin wanted us to be able to toggle the node "Sections".
-        if (isset($config->togglenodecoursesections) && $config->togglenodecoursesections == true && $COURSE->id > 1) {
-            // If yes, do it.
+        // Check if admin wanted us to be able to toggle the node "Sections" and if we are inside a course.
+        if (isset($config->togglenodecoursesections) && $COURSE->id > 1) {
+            // Remember the toggled node for JavaScript.
             $togglenodesforjs[] = 'sections';
             $firstsection = '';
             // Fetch course home node.
             $coursehomenode = $PAGE->navigation->find($COURSE->id, navigation_node::TYPE_COURSE);
 
-            // Create new navigation node "Sections".
-            $navnode = navigation_node::create(get_string('sections', 'moodle'), '/view.php?id='.$COURSE->id,
-                        global_navigation::TYPE_CUSTOM, null, 'localboostnavigationsections', null);
-
-            // Add the node to the course's navigation tree.
             // Get the children nodes for the coursehome node.
             $coursehomenodechildrenkeys = $coursehomenode->get_children_key_list();
             // Use caching.
-            $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'local_boostnavigation_section_cache');
+            $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'section_cache');
             // Get eventually already cached entries.
-            $cache = $localboostnavigationsectioncache->get('local_boostnavigation_section_cache');
+            $cache = $localboostnavigationsectioncache->get('section_cache');
 
             // If the cache is already filled for the current course id, then use this value.
             if (!empty($cache[$COURSE->id]) && array_search($cache[$COURSE->id], $coursehomenodechildrenkeys) != false) {
@@ -170,55 +173,64 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
             } else {
                 // Fill cache.
                 local_boostnavigation_fill_section_cache($coursehomenode, $coursehomenodechildrenkeys, $COURSE->id);
-                $cache = $localboostnavigationsectioncache->get('local_boostnavigation_section_cache');
+                $cache = $localboostnavigationsectioncache->get('section_cache');
                 $firstsection = $cache[$COURSE->id];
             }
             // Only add the node if there is at least one section and add the node before it.
             if (!empty($firstsection)) {
-                 $coursehomenode->add_node($navnode, $firstsection);
-            }
-            // Get the user preference for the toggle state of the sections node and set equivalent classes.
-            if (get_user_preferences('local_boostnavigation-collapse_sectionsnode', 0) == 0) {
-                $navnode->add_class('triangle-down node-expanded');
-            } else {
-                $navnode->add_class('triangle-up node-collapsed');
-            }
+                // Create new navigation node "Sections".
+                $sectionnode = navigation_node::create(get_string('sections', 'moodle'), 'course/view.php?id='.$COURSE->id,
+                    global_navigation::TYPE_CUSTOM, null, 'localboostnavigationsections', null);
+                $coursehomenode->add_node($sectionnode, $firstsection);
+                // Get the user preference for the toggle state of the sections node and set equivalent classes.
+                $userprefsections = get_user_preferences('local_boostnavigation-collapse_sectionsnode', 0);
+                if ($userprefsections == 0) {
+                    $sectionnode->add_class('node-expanded');
+                } else {
+                    $sectionnode->add_class('node-collapsed');
+                }
 
-            // Get the childkeys again because we added the node "Sections".
-            $coursehomenodechildrenkeys = $coursehomenode->get_children_key_list();
+                // Get the childkeys again because we added the node "Sections".
+                $coursehomenodechildrenkeys = $coursehomenode->get_children_key_list();
 
-            // All children need classes for displaying or hiding those.
-            // Get the offset (node "Sections + 1 item").
-            $offset = array_search('localboostnavigationsections', $coursehomenodechildrenkeys) + 1;
-            // Slice array "coursehomenodechildrenkeys" to start after the newly integrated sectionnode.
-            $sectionnodechildrenkeys = array_slice($coursehomenodechildrenkeys, $offset);
+                // All children need classes for displaying or hiding those.
+                // Get the offset (node "Sections + 1 item").
+                $offset = array_search('localboostnavigationsections', $coursehomenodechildrenkeys) + 1;
+                // Slice array "coursehomenodechildrenkeys" to start after the newly integrated sectionnode.
+                $sectionnodechildrenkeys = array_slice($coursehomenodechildrenkeys, $offset);
 
-            foreach ($sectionnodechildrenkeys as $k) {
-                // If the admin decided to display categories, things get slightly complicated.
-                if ($CFG->navshowmycoursecategories) {
-                    // We need to find all children nodes first.
-                    $allchildrennodes = local_boostnavigation_get_all_childrenkeys($coursehomenode->get($k));
-                    // Then we can add the equivalent classes.
-                    // Unfortunately, the children nodes have navigation_node type TYPE_MY_CATEGORY or navigation_node type
-                    // TYPE_COURSE, thus we need to search without a specific navigation_node type.
-                    foreach ($allchildrennodes as $cn) {
-                        if (get_user_preferences('local_boostnavigation-collapse_sectionsnode') == 0) {
-                            $coursehomenode->find($cn, null)->add_class("node-visible");
-                        } else {
-                            $coursehomenode->find($cn, null)->add_class("node-hidden");
+                foreach ($sectionnodechildrenkeys as $k) {
+                    // If the admin decided to display categories, things get slightly complicated.
+                    if ($CFG->navshowmycoursecategories) {
+                        // We need to find all children nodes first.
+                        $allchildrennodes = local_boostnavigation_get_all_childrenkeys($coursehomenode->get($k));
+                        // Then we can add the equivalent classes.
+                        // Unfortunately, the children nodes have navigation_node type TYPE_MY_CATEGORY or navigation_node type
+                        // TYPE_COURSE, thus we need to search without a specific navigation_node type.
+                        foreach ($allchildrennodes as $cn) {
+                            if ($userprefsections == 0) {
+                                $coursehomenode->find($cn, null)->add_class("node-visible");
+                            } else {
+                                $coursehomenode->find($cn, null)->add_class("node-hidden");
+                            }
                         }
-                    }
-                } else { // Otherwise we have a flat navigation tree and hiding the courses is easy.
-                    if (get_user_preferences('local_boostnavigation-collapse_sectionsnode') == 0) {
+                    } else { // Otherwise we have a flat navigation tree and hiding the courses is easy.
+                        if ($userprefsections == 0) {
                             $coursehomenode->get($k)->add_class("node-visible");
-                    } else {
+                        } else {
                             $coursehomenode->get($k)->add_class("node-hidden");
+                        }
                     }
                 }
             }
         }
 
-        $PAGE->requires->js_call_amd('local_boostnavigation/togglenavdrawernodes', 'init', [$togglenodesforjs]);
+        // If at least one of the options to toggle the mycourses or the sections node is set.
+        if (!empty($togglenodesforjs)) {
+            // Add JavaScript for toggeling the nodes to the page.
+            $PAGE->requires->js_call_amd('local_boostnavigation/togglenavdrawernodes', 'init', [$togglenodesforjs]);
+        }
+        // Allow updating the necessary user preferences via Ajax.
         user_preference_allow_ajax_update('local_boostnavigation-collapse_mycoursesnode', PARAM_BOOL);
         user_preference_allow_ajax_update('local_boostnavigation-collapse_sectionsnode', PARAM_BOOL);
     }

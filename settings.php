@@ -119,13 +119,14 @@ if ($hassiteconfig) {
                 get_string('setting_togglenodesheading', 'local_boostnavigation', null, true),
                 ''));
 
-        // Create my coureses node toggle widget.
+        // Create my courses node toggle widget.
         $page->add(new admin_setting_configcheckbox('local_boostnavigation/togglenodemycourses',
                 get_string('setting_togglenodemycourses', 'local_boostnavigation', null, true),
-                get_string('setting_togglenodemycourses_desc', 'local_boostnavigation', null, true),
+                get_string('setting_togglenodemycourses_desc', 'local_boostnavigation', null, true) . '<br />'.
+                        get_string('setting_togglenodemycoursesperformancehint', 'local_boostnavigation', null, true),
                 0));
 
-        // Create course home node toggle widget.
+        // Create course sections node toggle widget.
         $page->add(new admin_setting_configcheckbox('local_boostnavigation/togglenodecoursesections',
                 get_string('setting_togglenodecoursesections', 'local_boostnavigation', null, true),
                 get_string('setting_togglenodecoursesections_desc', 'local_boostnavigation', null, true),

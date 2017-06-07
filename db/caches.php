@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $definitions = array(
-    'local_boostnavigation_section_cache' => array(
+    'section_cache' => array(
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'staticacceleration' => true,

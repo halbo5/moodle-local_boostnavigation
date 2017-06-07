@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Boost navigation fumbling';
-$string['coursehome'] = 'Course home';
 $string['setting_removenodesheading'] = 'Remove root nodes from Boost\'s nav drawer';
 $string['setting_removenodestechnicalhint'] = 'Technically, this is done by setting the node\'s showinflatnavigation attribute to false. Thus, the node will only be hidden from the nav drawer, but it will remain in the navigation tree and can still be accessed by other parts of Moodle.';
 $string['setting_removecalendarnode'] = 'Remove "Calendar" node';
@@ -48,4 +47,5 @@ $string['setting_togglenodecoursesections'] = 'Toggle additional node "Sections"
 $string['setting_togglenodecoursesections_desc'] = 'Enabling this setting will create the node "Sections" that will be inserted in the nav drawer menu above the first section of the current course and by clicking on it, it will toggle the course sections.';
 $string['setting_togglenodemycourses'] = 'Toggle node "My Courses"';
 $string['setting_togglenodemycourses_desc'] = 'Enabling this setting will make it possible to toggle the node "My courses".';
+$string['setting_togglenodemycoursesperformancehint'] = 'Please note: If you enable this setting and have also enabled the setting <a href="/admin/search.php?query=navshowmycoursecategories">navshowmycoursecategories</a>, toggling the "My courses" node takes more time and you should consider disabling the navshowmycoursecategories setting.';
 

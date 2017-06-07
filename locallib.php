@@ -71,7 +71,9 @@ function local_boostnavigation_get_all_childrenkeys(navigation_node $navigationn
     // No, this node does not have children anymore.
     if (count($navigationnode->children) == 0) {
         return array();
-    } else { // Yes, this node has children.
+    }
+    // Yes, this node has children.
+    else {
         // Get own own children keys.
         $childrennodeskeys = $navigationnode->get_children_key_list();
         // Get all children keys of our children recursively.
@@ -94,8 +96,8 @@ function local_boostnavigation_get_all_childrenkeys(navigation_node $navigationn
  * @param int $courseid
  */
 function local_boostnavigation_fill_section_cache(navigation_node $parentnode, array $nodechildrenkeys, $courseid) {
-    // Use the cache "local_boostnavigation_section_cache".
-    $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'local_boostnavigation_section_cache');
+    // Use the cache "section_cache".
+    $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'section_cache');
     // Traverse the navigationnode children.
     foreach ($nodechildrenkeys as $k) {
         // Get the href URLs.
@@ -107,12 +109,12 @@ function local_boostnavigation_fill_section_cache(navigation_node $parentnode, a
             // If there's a sction-0 save the section id in the cache and don't go futrher.
             if ($urlparams[1] == "section-0") {
                 $cachevalue[$courseid] = $k;
-                $localboostnavigationsectioncache->set('local_boostnavigation_section_cache', $cachevalue);
+                $localboostnavigationsectioncache->set('section_cache', $cachevalue);
                 break;
                 // Otherwise we have no section-0 but a section-1 as first section.
             } else if (($urlparams[1] != "section-0") && ($urlparams[1] == "section-1")) {
                 $cachevalue[$courseid] = $k;
-                $localboostnavigationsectioncache->set('local_boostnavigation_section_cache', $cachevalue);
+                $localboostnavigationsectioncache->set('section_cache', $cachevalue);
             }
         }
     }
