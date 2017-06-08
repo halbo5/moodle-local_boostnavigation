@@ -10,13 +10,11 @@
 #nav-drawer .list-group-item.node-expanded > div::after {
     content: url([[pix:i/dropdown]]);
     padding-left: 0.2rem;
-    vertical-align: sub;
 }
 /* Add icon for displaying toggle state: collapsed. */
 #nav-drawer .list-group-item.node-collapsed > div::after {
     content: url([[pix:t/collapsed]]);
     padding-left: 0.2rem;
-    vertical-align: sub;
 }
 
 /* Set the cursor style to pointer for the toggling nodes. */

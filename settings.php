@@ -114,22 +114,33 @@ if ($hassiteconfig) {
                         get_string('setting_removemycoursesnodeperformancehint', 'local_boostnavigation', null, true),
                 0));
 
+        // Add inserting nodes heading.
+        $page->add(new admin_setting_heading('local_boostnavigation/addnodesheading',
+                get_string('setting_addnodesheading', 'local_boostnavigation', null, true),
+                ''));
+
+        // Create add course sections node widget.
+        $page->add(new admin_setting_configcheckbox('local_boostnavigation/addnodecoursesections',
+                get_string('setting_addnodecoursesections', 'local_boostnavigation', null, true),
+                get_string('setting_addnodecoursesections_desc', 'local_boostnavigation', null, true),
+                0));
+
         // Add toggle nodes heading.
         $page->add(new admin_setting_heading('local_boostnavigation/togglenodesheading',
                 get_string('setting_togglenodesheading', 'local_boostnavigation', null, true),
                 ''));
+
+        // Create course sections node toggle widget.
+        $page->add(new admin_setting_configcheckbox('local_boostnavigation/togglenodecoursesections',
+                get_string('setting_togglenodecoursesections', 'local_boostnavigation', null, true),
+                get_string('setting_togglenodecoursesections_desc', 'local_boostnavigation', null, true),
+                0));
 
         // Create my courses node toggle widget.
         $page->add(new admin_setting_configcheckbox('local_boostnavigation/togglenodemycourses',
                 get_string('setting_togglenodemycourses', 'local_boostnavigation', null, true),
                 get_string('setting_togglenodemycourses_desc', 'local_boostnavigation', null, true) . '<br />'.
                         get_string('setting_togglenodemycoursesperformancehint', 'local_boostnavigation', null, true),
-                0));
-
-        // Create course sections node toggle widget.
-        $page->add(new admin_setting_configcheckbox('local_boostnavigation/togglenodecoursesections',
-                get_string('setting_togglenodecoursesections', 'local_boostnavigation', null, true),
-                get_string('setting_togglenodecoursesections_desc', 'local_boostnavigation', null, true),
                 0));
     }
 

@@ -6,7 +6,8 @@ Changes
 
 ### Unreleased
 
-* 2017-05-10 - Settings to be able to toggle specific nav drawer nodes.
+* 2017-06-08 - Setting to be able to add the menu item "Sections".
+* 2017-06-08 - Settings to be able to toggle specific nav drawer nodes.
 
 ### v3.2-r10
 

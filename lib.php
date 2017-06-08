@@ -111,9 +111,43 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
         }
     }
 
+    // Check if admin wants to insert the node "Sections" in the Boost nav drawer.
+    if (isset($config->addnodecoursesections) && $config->addnodecoursesections == true) {
+        // Only proceed if we are inseide a course.
+        if ($config->addnodecoursesections == true && $COURSE->id > 1) {
+            $firstsection = '';
+            // Fetch course home node.
+            $coursehomenode = $PAGE->navigation->find($COURSE->id, navigation_node::TYPE_COURSE);
+            // Get the children nodes for the coursehome node.
+            $coursehomenodechildrenkeys = $coursehomenode->get_children_key_list();
+            // Use caching.
+            $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'section_cache');
+            // Get eventually already cached entries.
+            $cache = $localboostnavigationsectioncache->get('section_cache');
+
+            // If the cache is already filled for the current course id, then use this value.
+            if (!empty($cache[$COURSE->id]) && array_search($cache[$COURSE->id], $coursehomenodechildrenkeys) != false) {
+                $firstsection = $cache[$COURSE->id];
+            } else {
+                // Fill cache.
+                local_boostnavigation_fill_section_cache($coursehomenode, $coursehomenodechildrenkeys, $COURSE->id);
+                $cache = $localboostnavigationsectioncache->get('section_cache');
+                $firstsection = $cache[$COURSE->id];
+            }
+            // Only proceed if the course has sections.
+            if (!empty($firstsection)) {
+                // Create new navigation node "Sections".
+                $sectionnode = navigation_node::create(get_string('sections', 'moodle'), 'view.php?id='.$COURSE->id,
+                    global_navigation::TYPE_CUSTOM, null, 'localboostnavigationsections', null);
+                // Add the node before the first section.
+                $coursehomenode->add_node($sectionnode, $firstsection);
+            }
+        }
+    }
+
     // Check if admin wanted us to make it possible to toggle specific nodes in Boost's nav drawer.
     if (isset($config->togglenodemycourses) || isset($config->togglecoursehome) &&
-        $config->togglenodecoursesections == true && $config->togglenodemycourses == true) {
+        ($config->togglenodecoursesections == true || $config->togglenodemycourses == true)) {
         // Check if admin wanted us to be able to toggle the node "My Courses".
         if ($config->togglenodemycourses == true) {
             // Remember the toggled node for JavaScript.
@@ -152,36 +186,15 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
             }
         }
 
-        // Check if admin wanted us to be able to toggle the node "Sections" and if we are inside a course.
-        if (isset($config->togglenodecoursesections) && $COURSE->id > 1) {
+        // Check if admin enabled the inserting of the "Sections", wants us to be able to toggle this node
+        // and if we are inside a course.
+        if ($config->addnodecoursesections == true && $config->togglenodecoursesections == true && $COURSE->id > 1) {
             // Remember the toggled node for JavaScript.
             $togglenodesforjs[] = 'sections';
-            $firstsection = '';
-            // Fetch course home node.
-            $coursehomenode = $PAGE->navigation->find($COURSE->id, navigation_node::TYPE_COURSE);
 
-            // Get the children nodes for the coursehome node.
-            $coursehomenodechildrenkeys = $coursehomenode->get_children_key_list();
-            // Use caching.
-            $localboostnavigationsectioncache = cache::make('local_boostnavigation', 'section_cache');
-            // Get eventually already cached entries.
-            $cache = $localboostnavigationsectioncache->get('section_cache');
-
-            // If the cache is already filled for the current course id, then use this value.
-            if (!empty($cache[$COURSE->id]) && array_search($cache[$COURSE->id], $coursehomenodechildrenkeys) != false) {
-                $firstsection = $cache[$COURSE->id];
-            } else {
-                // Fill cache.
-                local_boostnavigation_fill_section_cache($coursehomenode, $coursehomenodechildrenkeys, $COURSE->id);
-                $cache = $localboostnavigationsectioncache->get('section_cache');
-                $firstsection = $cache[$COURSE->id];
-            }
-            // Only add the node if there is at least one section and add the node before it.
-            if (!empty($firstsection)) {
-                // Create new navigation node "Sections".
-                $sectionnode = navigation_node::create(get_string('sections', 'moodle'), 'course/view.php?id='.$COURSE->id,
-                    global_navigation::TYPE_CUSTOM, null, 'localboostnavigationsections', null);
-                $coursehomenode->add_node($sectionnode, $firstsection);
+            // Only proceed if there is the node sections within the navigation object.
+            // This should be the case because we check if addnodecoursesections is enabled and there the node will be added.
+            if ($navigation->find('localboostnavigationsections', global_navigation::TYPE_CUSTOM)) {
                 // Get the user preference for the toggle state of the sections node and set equivalent classes.
                 $userprefsections = get_user_preferences('local_boostnavigation-collapse_sectionsnode', 0);
                 if ($userprefsections == 0) {
@@ -229,9 +242,10 @@ function local_boostnavigation_extend_navigation(global_navigation $navigation) 
         if (!empty($togglenodesforjs)) {
             // Add JavaScript for toggeling the nodes to the page.
             $PAGE->requires->js_call_amd('local_boostnavigation/togglenavdrawernodes', 'init', [$togglenodesforjs]);
+            // Allow updating the necessary user preferences via Ajax.
+            foreach($togglenodesforjs as $node) {
+            user_preference_allow_ajax_update('local_boostnavigation-collapse_'. $node .'node', PARAM_BOOL);
+            }
         }
-        // Allow updating the necessary user preferences via Ajax.
-        user_preference_allow_ajax_update('local_boostnavigation-collapse_mycoursesnode', PARAM_BOOL);
-        user_preference_allow_ajax_update('local_boostnavigation-collapse_sectionsnode', PARAM_BOOL);
     }
 }

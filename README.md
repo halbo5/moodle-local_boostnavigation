@@ -39,11 +39,17 @@ There, you find two sections:
 
 Enabling any of these settings will remove them from Boost's nav drawer. Technically, this is done by setting the node's showinflatnavigation attribute to false. Thus, the node will only be hidden from the nav drawer, but it will remain in the navigation tree and can still be accessed by other parts of Moodle.
 
-### 2. Toggeling nodes in Boost's nav drawer
+### 2. Adding nodes in Boost's nav drawer
+
+#### 2.1 Add additional node "Sections"
+
+Enabling this setting will create the node "Sections" that will be inserted in the nav drawer menu above the first section of the current course.
+
+### 3. Toggling nodes in Boost's nav drawer
 
 #### 3.1 Toggle node "My Courses"
 
-Enabling this setting will make it possible to toggle the node "My courses".
+This setting will only work if the setting "Add additional node 'Sections'" is also enabled with which the addtional item "Sections" will be inserted in the menu. Enabling this setting will toggle the course sections.
 
 #### 3.2 Toggle additional node "Sections"
 
