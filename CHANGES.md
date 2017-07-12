@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2017-07-12 - Setting to be able to collapse nav drawer node "My courses".
 * 2017-05-29 - Add Travis CI support
 
 ### v3.2-r10

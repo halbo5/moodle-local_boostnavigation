@@ -113,8 +113,17 @@ if ($hassiteconfig) {
                         get_string('setting_removenodestechnicalhint', 'local_boostnavigation', null, true).'<br />'.
                         get_string('setting_removemycoursesnodeperformancehint', 'local_boostnavigation', null, true),
                 0));
-    }
 
+        // Add callapsing nodes heading.
+        $page->add(new admin_setting_heading('local_boostnavigation/collapsenodesheading',
+                get_string('setting_collapseodesheading', 'local_boostnavigation', null, true), ''));
+        // Create my courses node collapse widget.
+        $page->add(new admin_setting_configcheckbox('local_boostnavigation/collapsenodemycourses',
+            get_string('setting_collapsenodemycourses', 'local_boostnavigation', null, true),
+            get_string('setting_collapsenodemycourses_desc', 'local_boostnavigation', null, true) . '<br />'.
+            get_string('setting_collapsenodemycoursesperformancehint', 'local_boostnavigation', null, true),
+            0));
+    }
 
     // Add settings page to the appearance settings category.
     $ADMIN->add('appearance', $page);

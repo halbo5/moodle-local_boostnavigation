@@ -42,3 +42,7 @@ $string['setting_removemycoursesnode_desc'] = 'Enabling this setting will remove
 $string['setting_removemycoursesnodeperformancehint'] = 'Please note: If you enable this setting and have also enabled the setting <a href="/admin/search.php?query=navshowmycoursecategories">navshowmycoursecategories</a>, removing the "My courses" node takes more time and you should consider disabling the navshowmycoursecategories setting.';
 $string['setting_removeprivatefilesnode'] = 'Remove "Private files" node';
 $string['setting_removeprivatefilesnode_desc'] = 'Enabling this setting will remove the "Private files" node from Boost\'s nav drawer.';
+$string['setting_collapseodesheading'] = 'Collapsing nodes in Boost\'s nav drawer';
+$string['setting_collapsenodemycourses'] = 'Collapse node "My Courses"';
+$string['setting_collapsenodemycourses_desc'] = 'Enabling this setting will make it possible to collapse the node "My courses".';
+$string['setting_collapsenodemycoursesperformancehint'] = 'Please note: This setting will only work if the setting <a href="/admin/search.php?query=navshowmycoursecategories">navshowmycoursecategories</a> is not active. If you enabled it, this setting will be ignored and won\'t do anything.';
